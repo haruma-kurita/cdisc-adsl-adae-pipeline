@@ -1,0 +1,8 @@
+# SAS Temporary and Output Files
+*.log
+*.lst
+*.lck
+
+# OS System Files
+.DS_Store
+Thumbs.db
