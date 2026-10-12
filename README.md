@@ -38,4 +38,4 @@ To run this pipeline locally:
 4. Execute `01_adsl.sas` first to generate the foundational demographic data, followed by `02_adae.sas`.
 
 ## Acknowledgments & AI Assistance
-The implementation and implementation guidelines for this CDISC pipeline were developed using Google Gemini. Gemini was also utilized to check the SAS code for logical accuracy and CDISC compliance, and to generate this README documentation.
+The implementation guidelines for this CDISC pipeline were developed using Google Gemini. Gemini was also utilized to check the SAS code for logical accuracy and CDISC compliance, and to generate this README documentation.
