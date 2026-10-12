@@ -37,5 +37,5 @@ To run this pipeline locally:
 3. Update the macro variables `%let sdtm_path` and `%let adam_path` at the top of the scripts to match your local directory structure.
 4. Execute `01_adsl.sas` first to generate the foundational demographic data, followed by `02_adae.sas`.
 
-## Acknowledgments & AI Assistance
-The implementation guidelines for this CDISC pipeline were developed using Google Gemini. Gemini was also utilized to check the SAS code for logical accuracy and CDISC compliance, and to generate this README documentation.
+## Acknowledgments
+The raw SDTM clinical datasets utilized in this pipeline were sourced from the PHUSE GitHub repository. The implementation guideline for this CDISC pipeline were made with Google Gemini. Gemini was also utilized to check the SAS code for logical accuracy and to generate this README.
