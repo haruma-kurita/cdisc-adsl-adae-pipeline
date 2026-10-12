@@ -1,28 +1,43 @@
-# CDISC ADaM Pipeline (SDTM to ADSL & ADAE)
+# CDISC ADaM Derivation Pipeline: ADSL & ADAE
 
 ## Project Overview
-This repository contains a complete, end-to-end clinical SAS programming workflow that translates raw Study Data Tabulation Model (SDTM) datasets into CDISC-compliant Analysis Data Model (ADaM) datasets. The objective is to demonstrate industry-standard data derivation, merging techniques, and documentation practices used in clinical trials. 
+This repository contains a SAS-based clinical trial data pipeline that transforms standard Study Data Tabulation Model (SDTM) datasets into analysis-ready Analysis Data Model (ADaM) datasets. The project specifically focuses on deriving the **Analysis Data Subject Level (ADSL)** and **Adverse Events Analysis (ADAE)** datasets in accordance with CDISC standards.
 
-## Project Status: In Progress
-* **Phase 1 (Setup):** Complete. `00_setup.sas` unpacks raw FDA-standard `.xpt` transport files into native `.sas7bdat` format.
-* **Phase 2 (ADSL Build):** In development. `01_adsl_derivation.sas` is currently being written to establish the foundational Analysis Data Subject Level master roster, merging demographics, treatment dates, and population flags from `DM`, `EX`, and `DS` domains.
-* **Phase 3 (ADAE Build):** Pending. `02_adae_derivation.sas` will merge the completed ADSL with the raw `AE` domain to derive treatment-emergent adverse event flags and relative timing variables.
+## Clinical Data Flow
+The pipeline is divided into two sequential SAS scripts, representing the standard dependency of adverse event data on demographic baseline records.
+
+### 1. `01_adsl.sas` (Subject Level Analysis Dataset)
+* **Inputs:** `SDTM.DM` (Demographics), `SDTM.EX` (Exposure), `SDTM.DS` (Disposition)
+* **Output:** `ADAM.ADSL`
+* **Key Derivations:** 
+  * Age categorization (`AGEGR1`).
+  * Intent-to-Treat (`ITTFL`) and Safety (`SAFFL`) population flags.
+  * Treatment Start/End dates (`TRTSDT`, `TRTEDT`) and Duration (`TRTDUR`) using `first.USUBJID` and `last.USUBJID` record compression.
+  * Study completion status (`COMPLFL`).
+
+### 2. `02_adae.sas` (Adverse Events Analysis Dataset)
+* **Inputs:** `SDTM.AE` (Adverse Events), `ADAM.ADSL`
+* **Output:** `ADAM.ADAE`
+* **Key Derivations:**
+  * Merges raw occurrences with the ADSL demographic roster.
+  * Analysis Start Date (`ASTDT`) and Analysis Relative Day (`ASTDY`).
+  * Treatment Emergent Flag (`TRTEMFL`), utilizing computationally safe handling of missing numeric dates to prevent false positive flags.
+  * Enforces strict left-to-right column ordering via pre-merge `RETAIN` statements to perfectly match target metadata specifications.
+
+## Technical Highlights & Programming Standards
+* **Defensive Programming:** Implements `nmiss()` logic to safeguard date math and Boolean evaluations against standard SAS missing value behavior (e.g., preventing missing dates from evaluating as negative infinity).
+* **Robust String Comparison:** Utilizes `upcase()` functions to standardize raw clinical text before evaluating condition logic.
+* **Memory Management:** Leverages the `WORK` library for intermediate dataset generation (`ADSL01`, `ADSL02`) before committing final merged outputs to the permanent `ADAM` directory.
+* **Version Control:** Repository managed via Git/GitHub, with a `.gitignore` configured to exclude raw `.sas7bdat` clinical data and log files, ensuring PHI/data privacy compliance and repository efficiency.
 
 ## Repository Structure
 ```text
 cdisc-adsl-adae-pipeline/
-├── adam/                                  # Final ADaM datasets (adsl, adae)
-├── programs/                              # SAS programs for data derivation
-│   ├── 00_setup.sas
-│   └── 01_adsl_derivation.sas             # (In Progress)
-├── sdtm/                                  # Raw CDISC SDTM datasets (dm, ex, ds, ae)
-├── ADaM_Pipeline_Specifications.xlsx      # Central derivation specification document
-├── .gitignore                             # Excludes SAS system logs and lock files
-└── README.md
-```
-
-## Note on Data Privacy & Version Control
-The datasets included in this repository are public, anonymized mock CDISC Pilot data. The `.sas7bdat` files are included directly in the repository solely for portfolio convenience, allowing reviewers to clone the repository and run the code instantly without hunting for source files. In a true clinical production environment, raw patient data files are strictly excluded from version control to maintain HIPAA and GCP compliance. 
-
-## Acknowledgments
-* **AI Assistance:** Google Gemini was utilized to architect the standard `ADaM_Pipeline_Specifications.xlsx` document and served as a secondary code review assistant for SAS syntax and macro resolution troubleshooting.
+│
+├── adam/                   # Output directory for final ADaM datasets (ignored by Git)
+├── sdtm/                   # Input directory for raw SDTM datasets (ignored by Git)
+│
+├── 01_adsl.sas             # ADSL derivation script
+├── 02_adae.sas             # ADAE derivation script
+├── .gitignore              # Restricts clinical data and log file uploads
+└── README.md               # Project documentation
