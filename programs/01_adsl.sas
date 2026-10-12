@@ -128,11 +128,14 @@ proc sort data=ADSL03;
 run;
 
 
-data ADSL;
+data adam.ADSL;
+	retain USUBJID AGE AGEGR1 SEX RACE TRT01P TRT01A TRTSDT TRTEDT TRTDUR SAFFL ITTFL COMPLFL;
 	merge ADSL01 (in=a) ADSL02 (in=b) ADSL03 (in=c);
 	by USUBJID;
 	if a;
 run;
 
+proc print data=adam.ADSL;
+run;
 
 
