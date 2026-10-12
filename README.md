@@ -30,14 +30,12 @@ The pipeline is divided into two sequential SAS scripts, representing the standa
 * **Memory Management:** Leverages the `WORK` library for intermediate dataset generation (`ADSL01`, `ADSL02`) before committing final merged outputs to the permanent `ADAM` directory.
 * **Version Control:** Repository managed via Git/GitHub, with a `.gitignore` configured to exclude raw `.sas7bdat` clinical data and log files, ensuring PHI/data privacy compliance and repository efficiency.
 
-## Repository Structure
-```text
-cdisc-adsl-adae-pipeline/
-│
-├── adam/                   # Output directory for final ADaM datasets (ignored by Git)
-├── sdtm/                   # Input directory for raw SDTM datasets (ignored by Git)
-│
-├── 01_adsl.sas             # ADSL derivation script
-├── 02_adae.sas             # ADAE derivation script
-├── .gitignore              # Restricts clinical data and log file uploads
-└── README.md               # Project documentation
+## Setup & Execution
+To run this pipeline locally:
+1. Clone this repository.
+2. Ensure the local `sdtm` folder is populated with the requisite raw `.sas7bdat` files (`dm`, `ex`, `ds`, `ae`).
+3. Update the macro variables `%let sdtm_path` and `%let adam_path` at the top of the scripts to match your local directory structure.
+4. Execute `01_adsl.sas` first to generate the foundational demographic data, followed by `02_adae.sas`.
+
+## Acknowledgments & AI Assistance
+The implementation and implementation guidelines for this CDISC pipeline were developed using Google Gemini. Gemini was also utilized to check the SAS code for logical accuracy and CDISC compliance, and to generate this README documentation.
